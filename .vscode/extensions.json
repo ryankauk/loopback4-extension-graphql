@@ -1,0 +1,17 @@
+{
+  "recommendations": [
+    "formulahendry.auto-close-tag",
+    "formulahendry.auto-rename-tag",
+    "codezombiech.gitignore",
+    "prisma.vscode-graphql",
+    "sysoev.language-stylus",
+    "thisismanta.stylus-supremacy",
+    "christian-kohler.npm-intellisense",
+    "esbenp.prettier-vscode",
+    "wayou.vscode-todo-highlight",
+    "pkief.material-icon-theme",
+    "dracula-theme.theme-dracula",
+    "redhat.vscode-yaml",
+    "mikestead.dotenv"
+  ]
+}
