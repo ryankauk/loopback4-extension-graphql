@@ -58,5 +58,8 @@
     "@types/debug": "0.0.31",
     "@types/node": "^10.11.2",
     "graphql-middleware": "^2.0.2"
+  },
+  "peerDependencies": {
+    "@types/aws-lambda": "^8.10.15"
   }
 }
