@@ -27,7 +27,7 @@
     "posttest": "npm run lint",
     "test:dev": "lb-mocha --allow-console-logs dist/test/**/*.js && npm run posttest",
     "prepublishOnly": "npm run test",
-    "preinstall": "npm run build"
+    "publish": "npm run build"
   },
   "repository": {
     "type": "git"
