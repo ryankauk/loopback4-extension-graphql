@@ -1,5 +1,5 @@
-import {CoreBindings} from '@loopback/core';
-
+import {CoreBindings, BindingKey} from '@loopback/core';
+import {GraphqlAdapter} from './server';
 export namespace GraphQLBindings {
   // RestServer-specific bindings
   export const CONFIG = `${CoreBindings.APPLICATION_CONFIG}#graphql`;
@@ -7,5 +7,8 @@ export namespace GraphQLBindings {
   export const ENDPOINT = 'graphql.endpoint';
 
   export const API_SPEC = 'graphql.apiSpec';
-  export const HANDLER = 'graphql.handler';
+  export const SCHEMA = 'graphql.schema';
+  export const ADAPTER = BindingKey.create<GraphqlAdapter<any> | undefined>(
+    'graphql.adapter',
+  );
 }
