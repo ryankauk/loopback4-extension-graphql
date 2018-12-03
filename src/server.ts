@@ -1,64 +1,57 @@
 import {Server, CoreBindings, Application} from '@loopback/core';
 
 import {inject, Context, Constructor} from '@loopback/context';
-import {GraphQLServer as YogaServer} from 'graphql-yoga';
+import {GraphQLServer} from 'graphql-yoga';
 import {Server as HttpServer} from 'http';
 import {Server as HttpsServer} from 'https';
 import {GraphQLBindings} from './keys';
 import {buildSchemaSync} from 'type-graphql';
 import {MiddlewareHander} from './middleware';
+export interface GraphqlAdapter<GraphqlServer> {
+  start(): Promise<void>;
+  stop(): Promise<void>;
+  graphQlInit(schema: any): void;
+}
 
-export class GraphQlServer extends Context implements Server {
-  private server: YogaServer;
+interface AdpapterFunction {
+  (): Promise<void>;
+}
+export class GraphQlServer<GraphqlServer = GraphQLServer> extends Context
+  implements Server {
+  private defaultServer: GraphQLServer;
   private httpServer: HttpServer | HttpsServer;
   listening: boolean = false;
-  endpoint = '/graphql';
+
+  generatedSchema: any;
+  _start: AdpapterFunction;
+  _stop: AdpapterFunction;
   constructor(
     @inject(CoreBindings.APPLICATION_INSTANCE) protected app: Application,
-    @inject(GraphQLBindings.HANDLER) protected _handler: MiddlewareHander,
+    @inject(GraphQLBindings.ADAPTER)
+    protected adapter: GraphqlAdapter<GraphqlServer>,
   ) {
     super(app);
 
-    this.app.bind(GraphQLBindings.ENDPOINT).to(this.endpoint);
+    let resolvers = this.find('controllers.*').map(b => b.valueConstructor);
+    if (!resolvers || resolvers.length <= 0) {
+      this.generatedSchema = [];
+    } else {
+      this.generatedSchema = buildSchemaSync({
+        resolvers: this.find('controllers.*').map(b => b.valueConstructor),
+      });
+    }
 
-    const schema = buildSchemaSync({
-      resolvers: this.find('controllers.*').map(b => b.valueConstructor),
-    });
+    app.bind(GraphQLBindings.SCHEMA).to(this.generatedSchema);
 
-    this.server = new YogaServer({
-      schema,
-      middlewares: this._handler.handle(),
-      context: ({request}) => {
-        const ctx = {
-          // create mocked user in context
-          // in real app you would be mapping user from `request.user` or sth
-          user: {
-            id: 1,
-            name: 'Sample user',
-            roles: ['REGULAR'],
-          },
-        };
-        return ctx;
-      },
-    });
-  }
-
-  handler(value: Constructor<MiddlewareHander>) {
-    this.bind(GraphQLBindings.HANDLER).toClass(value);
+    adapter.graphQlInit(this.generatedSchema);
   }
 
   async start(): Promise<void> {
-    this.httpServer = await this.server.start({
-      endpoint: this.endpoint,
-    });
-
-    this.listening = true;
-    return Promise.resolve();
+    if (this.adapter && this.adapter.start) return this.adapter.start();
+    console.warn("Graphql Server start isn't attached");
   }
 
   async stop(): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      this.httpServer.close(() => resolve());
-    });
+    if (this.adapter && this.adapter.stop) return this.adapter.stop();
   }
 }
