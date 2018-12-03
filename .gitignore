@@ -63,3 +63,5 @@ api-docs/
 # Transpiled JavaScript files from Typescript
 /dist
 /dist*/
+dist/
+dist*/
