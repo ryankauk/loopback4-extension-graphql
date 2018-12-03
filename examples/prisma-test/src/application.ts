@@ -12,12 +12,8 @@ import {RepositoryMixin} from '@loopback/repository';
 import {RestApplication} from '@loopback/rest';
 import {ServiceMixin} from '@loopback/service-proxy';
 import * as path from 'path';
-import {MySequence, MyGraphqlAdapter} from './sequence';
-import {
-  GraphQlComponent,
-  GraphQLBindings,
-  GraphQlServer,
-} from '@ryankauk/graphql';
+import {MySequence, MiddlewareHandler} from './sequence';
+import {GraphQlComponent, GraphQLBindings} from '@ryankauk/graphql';
 
 export class PrismaTestApplication extends BootMixin(
   ServiceMixin(Application),
@@ -27,7 +23,9 @@ export class PrismaTestApplication extends BootMixin(
     // boot
 
     // server
-    this.bind(GraphQLBindings.ADAPTER).toClass(MyGraphqlAdapter);
+
+    this.bind(GraphQLBindings.HANDLER).toClass(MiddlewareHandler);
+
     this.component(GraphQlComponent);
 
     this.projectRoot = __dirname;

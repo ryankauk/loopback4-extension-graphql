@@ -57,7 +57,6 @@
     "@loopback/rest-explorer": "^1.1.2",
     "@loopback/service-proxy": "^1.0.3",
     "@ryankauk/graphql": "file:../../",
-    "graphql-yoga": "^1.16.7",
     "passport-auth0": "^1.1.0"
   },
   "devDependencies": {
